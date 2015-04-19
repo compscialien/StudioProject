@@ -73,9 +73,11 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	void FixedUpdate ()
 	{
-		checkJumpApex (this.rbody.position.y);
-		//Debug.Log ("currentAnimState = " + currentAnimState);
-		if (isMoving () == false) {
+		if (IsOnGround () == false) {
+			checkJumpApex (this.rbody.position.y);
+		}
+
+		if (isMoving () == false && IsOnGround ()) {
 			currentAnimState = 0;
 		}
 		animator.SetInteger ("AnimState", currentAnimState);
@@ -223,9 +225,6 @@ public class PlayerObjectController : MonoBehaviour
 
 			if (yCurrent < yPrevious) {
 				setAnimFall();
-			} else if (yCurrent == yPrevious && currentAnimState != 0) {
-				// setAnimIdle();
-				//Debug.Log("Tried to set animation to idle");
 			}
 
 			yPrevious = yCurrent;
@@ -235,8 +234,9 @@ public class PlayerObjectController : MonoBehaviour
 
 	public bool isMoving () {
 		if (this.rbody.velocity.x != 0 && IsOnGround()) {
-			return true;
 			Debug.Log("Moving");
+			return true;
+
 		} else {
 			return false;
 		}
