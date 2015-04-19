@@ -36,9 +36,7 @@ public class PlayerObjectController : MonoBehaviour
 	 * reacquire the rigid body.
 	 */
 	Rigidbody2D rbody;
-
-	BoxCollider2D clder;
-
+	
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
 	 * acquire any references required and run any set up code we may need.
@@ -48,10 +46,8 @@ public class PlayerObjectController : MonoBehaviour
 	
 		// Use GetComponent to get the rigid body of this PlayerObject
 		this.rbody = GetComponent<Rigidbody2D> ();
-
-		this.clder = GetComponent<BoxCollider2D> ();
 	}
-	
+
 	/**
 	 * This is the per-frame update function.  Note that it used the timelocked FixedUpdate
 	 * version, instead of Update().  This prevents issues with rigid bodies and the physics.
@@ -82,6 +78,7 @@ public class PlayerObjectController : MonoBehaviour
 
 		// Cap the maximum velocity
 		if ((velocity.x > 0 && velocity.x > maxVelocity.x) || (velocity.x < 0 && velocity.x < maxVelocity.x)) {
+
 			this.rbody.velocity = maxVelocity;
 		}
 	}
@@ -96,6 +93,19 @@ public class PlayerObjectController : MonoBehaviour
 		// Check that the rigidbody component was acquired in Start(), or throw an exception.
 		if (this.rbody == null) {
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
+		}
+
+		// Get a copy of the player's local scale vector
+		Vector3 ls = transform.localScale;
+		
+		// If the x scale is negative, meaning the object is facing left
+		if (ls.x < 0) {
+			
+			// Reverse the x scaling to make the object face the other direction
+			ls.x = -ls.x;
+			
+			// Save the new local scale vector to the transformation
+			transform.localScale = ls;
 		}
 
 		// Apply the walking thrust as a force to the rigid body
@@ -113,6 +123,19 @@ public class PlayerObjectController : MonoBehaviour
 		if (this.rbody == null) {
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
 		}
+
+		// Get a copy of the player's local scale vector
+		Vector3 ls = transform.localScale;
+
+		// If the x scale is positive, meaning the object is facing right
+		if (ls.x > 0) {
+
+			// Reverse the x scaling to make the object face the other direction
+			ls.x = -ls.x;
+
+			// Save the new local scale vector to the transformation
+			transform.localScale = ls;
+		}
 		
 		// Apply the walking thrust as a force to the rigid body
 		this.rbody.AddForce (-walkThrust * Vector2.right);
@@ -124,7 +147,8 @@ public class PlayerObjectController : MonoBehaviour
 	bool IsOnGround ()
 	{
 		// TODO this currently is hitting something and always giving true
-		return Physics2D.Raycast (new Vector2 (transform.position.x, transform.position.y), -Vector2.up, 0.0001f);
+		// TODO make the vector check again y + image height converted to in-game units
+		return Physics2D.Raycast (new Vector2 (transform.position.x, transform.position.y), -Vector2.up, 0.001f);
 	}
 
 	/**
