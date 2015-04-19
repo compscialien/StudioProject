@@ -31,11 +31,27 @@ public class PlayerObjectController : MonoBehaviour
 	public float jumpThrust;
 
 	/**
+	 * The y value of the player from the previous frame. Used to compare with
+	 * current frame's y value and determine apex of jump.
+	 */
+	public float yPrevious;
+
+	/**
+	 * Stores and holds animation state until it is changed by a signal.
+	 */
+	public int currentAnimState = 0;
+
+	/**
 	 * A private reference to the RigidBody2D that this PlayerObject uses.  This
 	 * reference means that we do not have to repeatedly use GetComponent to
 	 * reacquire the rigid body.
 	 */
 	Rigidbody2D rbody;
+
+	/**
+	 * A private reference to the animation controller that this PlayerObject uses.
+	 */
+	private Animator animator;
 	
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
@@ -46,6 +62,9 @@ public class PlayerObjectController : MonoBehaviour
 	
 		// Use GetComponent to get the rigid body of this PlayerObject
 		this.rbody = GetComponent<Rigidbody2D> ();
+
+		// Sets the variable animator to the animation controller assigned to this PlayerObject
+		animator = this.GetComponent<Animator> ();
 	}
 
 	/**
@@ -54,8 +73,15 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	void FixedUpdate ()
 	{
+		checkJumpApex (this.rbody.position.y);
+		//Debug.Log ("currentAnimState = " + currentAnimState);
+		if (isMoving () == false) {
+			currentAnimState = 0;
+		}
+		animator.SetInteger ("AnimState", currentAnimState);
 
-		// Currently no update code
+		//Debug.Log("real AnimState = " + animator.GetInteger("AnimState"));
+
 	}
 
 	/**
@@ -97,7 +123,9 @@ public class PlayerObjectController : MonoBehaviour
 
 		// Get a copy of the player's local scale vector
 		Vector3 ls = transform.localScale;
-		
+
+
+
 		// If the x scale is negative, meaning the object is facing left
 		if (ls.x < 0) {
 			
@@ -110,6 +138,9 @@ public class PlayerObjectController : MonoBehaviour
 
 		// Apply the walking thrust as a force to the rigid body
 		this.rbody.AddForce (walkThrust * Vector2.right);
+
+		// Turns on the "move" animation state
+		setAnimMove ();
 	}
 
 	/**
@@ -124,8 +155,10 @@ public class PlayerObjectController : MonoBehaviour
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
 		}
 
+
 		// Get a copy of the player's local scale vector
 		Vector3 ls = transform.localScale;
+
 
 		// If the x scale is positive, meaning the object is facing right
 		if (ls.x > 0) {
@@ -136,9 +169,14 @@ public class PlayerObjectController : MonoBehaviour
 			// Save the new local scale vector to the transformation
 			transform.localScale = ls;
 		}
-		
+
+
 		// Apply the walking thrust as a force to the rigid body
 		this.rbody.AddForce (-walkThrust * Vector2.right);
+
+		// Turns on the "move" animation state
+		setAnimMove ();
+
 	}
 
 	/**
@@ -168,6 +206,70 @@ public class PlayerObjectController : MonoBehaviour
 
 			// Apply the jumping thrust as a force to the rigid body
 			this.rbody.AddForce (jumpThrust * Vector2.up);
+
+			// Turns on the "jump" animation state
+			setAnimJump();
 		}
 	}
+
+	/**
+	 * Compares Y value for current frame to Y value from previous frame
+	 * to determine if character is falling instead of ascending
+	 * 
+	 * TODO this should only be called if PlayerObject is not on ground.
+	 */
+	public void checkJumpApex ( float yCurrent ) {
+		if (yPrevious != null) {
+
+			if (yCurrent < yPrevious) {
+				setAnimFall();
+			} else if (yCurrent == yPrevious && currentAnimState != 0) {
+				// setAnimIdle();
+				//Debug.Log("Tried to set animation to idle");
+			}
+
+			yPrevious = yCurrent;
+
+		}
+	}
+
+	public bool isMoving () {
+		if (this.rbody.velocity.x != 0 && IsOnGround()) {
+			return true;
+			Debug.Log("Moving");
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * The following "setAnim" classes set an animation state for the PlayerObject,
+	 * which in turn triggers an associated animation:
+	 * 0 = idle
+	 * 1 = moving
+	 * 2 = jump up
+	 * 3 = jump down
+	 * 4 = death
+	 */
+
+	public void setAnimIdle () {
+		currentAnimState = 0;
+	}
+
+	public void setAnimMove () {
+		currentAnimState = 1;
+	}
+
+	public void setAnimJump () {
+		//if (!(this.IsOnGround ())) {
+			currentAnimState = 2;
+		//}
+	}
+
+	public void setAnimFall () {
+		//if (!(this.IsOnGround ())) {
+			currentAnimState = 3;
+		//}
+	}
+
 }

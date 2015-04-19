@@ -419,6 +419,8 @@ MonoBehaviour:
   walkThrust: 100
   walkSpeed: 1
   jumpThrust: 50
+  yPrevious: 0
+  currentAnimState: 0
 --- !u!50 &1673999221
 Rigidbody2D:
   m_ObjectHideFlags: 0
