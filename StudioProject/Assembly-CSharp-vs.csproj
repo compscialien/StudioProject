@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Parallaxing.cs" />
      <Compile Include="Assets\Scripts\PlayerObjectController.cs" />
      <Compile Include="Assets\Scripts\ReplayController.cs" />
      <Compile Include="Assets\Scripts\UserController.cs" />
