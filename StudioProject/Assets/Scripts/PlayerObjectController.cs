@@ -34,12 +34,12 @@ public class PlayerObjectController : MonoBehaviour
 	 * The y value of the player from the previous frame. Used to compare with
 	 * current frame's y value and determine apex of jump.
 	 */
-	public float yPrevious;
+	float yPrevious;
 
 	/**
 	 * Stores and holds animation state until it is changed by a signal.
 	 */
-	public int currentAnimState = 0;
+	int currentAnimState = 0;
 
 	/**
 	 * A private reference to the RigidBody2D that this PlayerObject uses.  This
@@ -51,7 +51,7 @@ public class PlayerObjectController : MonoBehaviour
 	/**
 	 * A private reference to the animation controller that this PlayerObject uses.
 	 */
-	private Animator animator;
+	Animator animator;
 	
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
