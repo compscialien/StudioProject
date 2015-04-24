@@ -34,12 +34,18 @@ public class PlayerObjectController : MonoBehaviour
 	 * The y value of the player from the previous frame. Used to compare with
 	 * current frame's y value and determine apex of jump.
 	 */
-	public float yPrevious;
+	float yPrevious;
 
 	/**
 	 * Stores and holds animation state until it is changed by a signal.
 	 */
-	public int currentAnimState = 0;
+	int currentAnimState = 0;
+
+	/**
+	 * boolean to define which direction the character is facing. Defaults to 
+	 * right-facing at start of game.
+	 */
+	bool rightFacing = true;
 
 	/**
 	 * A private reference to the RigidBody2D that this PlayerObject uses.  This
@@ -51,7 +57,7 @@ public class PlayerObjectController : MonoBehaviour
 	/**
 	 * A private reference to the animation controller that this PlayerObject uses.
 	 */
-	private Animator animator;
+	Animator animator;
 	
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
@@ -78,11 +84,11 @@ public class PlayerObjectController : MonoBehaviour
 		}
 
 		if (isMoving () == false && IsOnGround ()) {
-			currentAnimState = 0;
+			setAnimIdle();
 		}
 		animator.SetInteger ("AnimState", currentAnimState);
 
-		//Debug.Log("real AnimState = " + animator.GetInteger("AnimState"));
+		Debug.Log("real AnimState = " + animator.GetInteger("AnimState"));
 
 	}
 
@@ -109,6 +115,9 @@ public class PlayerObjectController : MonoBehaviour
 
 			this.rbody.velocity = maxVelocity;
 		}
+
+		Debug.Log ("rightFacing = " + rightFacing);
+
 	}
 
 	/**
@@ -140,6 +149,9 @@ public class PlayerObjectController : MonoBehaviour
 
 		// Apply the walking thrust as a force to the rigid body
 		this.rbody.AddForce (walkThrust * Vector2.right);
+
+		// Turn on the rightFacing flag so that animations face right
+		rightFacing = true;
 
 		// Turns on the "move" animation state
 		setAnimMove ();
@@ -175,6 +187,9 @@ public class PlayerObjectController : MonoBehaviour
 
 		// Apply the walking thrust as a force to the rigid body
 		this.rbody.AddForce (-walkThrust * Vector2.right);
+
+		// Flip the rightFacing flag so that animations face left
+		rightFacing = false;
 
 		// Turns on the "move" animation state
 		setAnimMove ();
@@ -234,7 +249,7 @@ public class PlayerObjectController : MonoBehaviour
 
 	public bool isMoving () {
 		if (this.rbody.velocity.x != 0 && IsOnGround()) {
-			Debug.Log("Moving");
+			//Debug.Log("Moving");
 			return true;
 
 		} else {
@@ -245,30 +260,67 @@ public class PlayerObjectController : MonoBehaviour
 	/**
 	 * The following "setAnim" classes set an animation state for the PlayerObject,
 	 * which in turn triggers an associated animation:
-	 * 0 = idle
-	 * 1 = moving
-	 * 2 = jump up
-	 * 3 = jump down
+	 * -5, 5 = idle left, right
+	 * -1, 1 = moving left, right
+	 * -2, 2 = jump up left, right
+	 * -3, 3 = jump down left, right
 	 * 4 = death
 	 */
 
 	public void setAnimIdle () {
-		currentAnimState = 0;
-	}
 
+		switch (rightFacing)
+		{
+		case false:
+			currentAnimState = -5;
+			break;
+		case true:
+			currentAnimState = 5;
+			break;
+		}
+
+
+	}
+	
 	public void setAnimMove () {
-		currentAnimState = 1;
+		switch (rightFacing)
+		{
+		case false:
+			currentAnimState = -1;
+			Debug.Log("I should be facing left");
+			break;
+		case true:
+			currentAnimState = 1;
+			Debug.Log("I should be facing right");
+			break;
+		}
 	}
 
 	public void setAnimJump () {
 		//if (!(this.IsOnGround ())) {
-			currentAnimState = 2;
+			switch (rightFacing)
+			{
+				case false:
+					currentAnimState = -2;
+					break;
+				case true:
+					currentAnimState = 2;
+					break;
+			}
 		//}
 	}
 
 	public void setAnimFall () {
 		//if (!(this.IsOnGround ())) {
-			currentAnimState = 3;
+			switch (rightFacing)
+			{
+				case false:
+					currentAnimState = -3;
+					break;
+				case true:
+					currentAnimState = 3;
+					break;
+			}
 		//}
 	}
 
