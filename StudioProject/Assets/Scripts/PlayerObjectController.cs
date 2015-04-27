@@ -250,6 +250,7 @@ public class PlayerObjectController : MonoBehaviour
 
 		this.rbody.velocity = Vector2.zero;
 		this.isDead = true;
+		this.setAnimDead ();
 	}
 
 	/**
