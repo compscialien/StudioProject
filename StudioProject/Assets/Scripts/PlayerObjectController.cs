@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class PlayerObjectController : MonoBehaviour
@@ -31,10 +31,15 @@ public class PlayerObjectController : MonoBehaviour
 	public float jumpThrust;
 
 	/**
+	 * Reference to the empty object below the player for collision
+	 */
+	public Transform below;
+
+	/**
 	 * The y value of the player from the previous frame. Used to compare with
 	 * current frame's y value and determine apex of jump.
 	 */
-	float yPrevious;
+	float yPrevious = 0.0f;
 
 	/**
 	 * Stores and holds animation state until it is changed by a signal.
@@ -79,17 +84,41 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	void FixedUpdate ()
 	{
-		if (IsOnGround () == false) {
-			checkJumpApex (this.rbody.position.y);
+		// If the player is not on the groumd, check the jump arc and update the animation
+		// accordingly
+		if (isOnGround () == false) {
+
+			this.checkFalling (this.rbody.position.y);
 		}
 
-		if (isMoving () == false && IsOnGround ()) {
-			setAnimIdle();
+		// Otherwise, if the player is not moving, go to the idle animation
+		else if (!isMoving ()) { 
+
+			this.setAnimIdle ();
 		}
-		animator.SetInteger ("AnimState", currentAnimState);
+	}
 
-		Debug.Log("real AnimState = " + animator.GetInteger("AnimState"));
+	/**
+	 * Called when the player object collides with another object.  Used to set animation state
+	 * when landing on the ground, as well as for hitting death triggers
+	 */
+	void OnCollisionEnter2D (Collision2D col)
+	{
+		// If the player object is now grounded
+		if (this.isOnGround ()) {
 
+			// If the player object is moving, set to the moving animation
+			if (this.isMoving ()) {
+
+				this.setAnimMove ();
+			}
+
+			// Otherwise go to the idle animation
+			else {
+
+				this.setAnimIdle ();
+			}
+		}
 	}
 
 	/**
@@ -115,9 +144,6 @@ public class PlayerObjectController : MonoBehaviour
 
 			this.rbody.velocity = maxVelocity;
 		}
-
-		Debug.Log ("rightFacing = " + rightFacing);
-
 	}
 
 	/**
@@ -130,21 +156,6 @@ public class PlayerObjectController : MonoBehaviour
 		// Check that the rigidbody component was acquired in Start(), or throw an exception.
 		if (this.rbody == null) {
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
-		}
-
-		// Get a copy of the player's local scale vector
-		Vector3 ls = transform.localScale;
-
-
-
-		// If the x scale is negative, meaning the object is facing left
-		if (ls.x < 0) {
-			
-			// Reverse the x scaling to make the object face the other direction
-			ls.x = -ls.x;
-			
-			// Save the new local scale vector to the transformation
-			transform.localScale = ls;
 		}
 
 		// Apply the walking thrust as a force to the rigid body
@@ -169,22 +180,6 @@ public class PlayerObjectController : MonoBehaviour
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
 		}
 
-
-		// Get a copy of the player's local scale vector
-		Vector3 ls = transform.localScale;
-
-
-		// If the x scale is positive, meaning the object is facing right
-		if (ls.x > 0) {
-
-			// Reverse the x scaling to make the object face the other direction
-			ls.x = -ls.x;
-
-			// Save the new local scale vector to the transformation
-			transform.localScale = ls;
-		}
-
-
 		// Apply the walking thrust as a force to the rigid body
 		this.rbody.AddForce (-walkThrust * Vector2.right);
 
@@ -199,11 +194,9 @@ public class PlayerObjectController : MonoBehaviour
 	/**
 	 * Returns true if the object is on the ground, or false otherwise.
 	 */
-	bool IsOnGround ()
+	bool isOnGround ()
 	{
-		// TODO this currently is hitting something and always giving true
-		// TODO make the vector check again y + image height converted to in-game units
-		return Physics2D.Raycast (new Vector2 (transform.position.x, transform.position.y), -Vector2.up, 0.001f);
+		return Physics2D.Raycast (new Vector2 (below.position.x, below.position.y), -Vector2.up, 0.001f);
 	}
 
 	/**
@@ -219,42 +212,41 @@ public class PlayerObjectController : MonoBehaviour
 		}
 
 		// Check if this object is on the ground
-		if (this.IsOnGround ()) {
+		if (this.isOnGround ()) {
 
 			// Apply the jumping thrust as a force to the rigid body
 			this.rbody.AddForce (jumpThrust * Vector2.up);
 
 			// Turns on the "jump" animation state
-			setAnimJump();
+			setAnimJump ();
 		}
 	}
 
 	/**
 	 * Compares Y value for current frame to Y value from previous frame
-	 * to determine if character is falling instead of ascending
-	 * 
-	 * TODO this should only be called if PlayerObject is not on ground.
+	 * to determine if character is falling instead of ascending, and then sets
+	 * the new animation state of the object
 	 */
-	public void checkJumpApex ( float yCurrent ) {
-		if (yPrevious != null) {
+	void checkFalling (float yCurrent)
+	{
+		// Check that the current y position is less than the previous,
+		// if true, then the object is falling
+		if (yCurrent < yPrevious) {
 
-			if (yCurrent < yPrevious) {
-				setAnimFall();
-			}
-
-			yPrevious = yCurrent;
-
+			setAnimFall ();
 		}
+
+		// Capture the current y position for the next check
+		yPrevious = yCurrent;
 	}
 
-	public bool isMoving () {
-		if (this.rbody.velocity.x != 0 && IsOnGround()) {
-			//Debug.Log("Moving");
-			return true;
-
-		} else {
-			return false;
-		}
+	/**
+	 * Returns true if the player object is moving in the x direction above a small
+	 * threshold and on the ground.
+	 */
+	public bool isMoving ()
+	{
+		return (Mathf.Abs (this.rbody.velocity.x) >= 0.00001);
 	}
 
 	/**
@@ -264,64 +256,89 @@ public class PlayerObjectController : MonoBehaviour
 	 * -1, 1 = moving left, right
 	 * -2, 2 = jump up left, right
 	 * -3, 3 = jump down left, right
-	 * 4 = death
+	 * 4     = death
 	 */
 
-	public void setAnimIdle () {
+	/**
+	 * Sets the player's animation state to the idle animation.
+	 * Handles finding the directional version of the animation.
+	 */
+	public void setAnimIdle ()
+	{
+		// Figure out the correct version for checks and sets
+		int aniState = (rightFacing ? 5 : -5);
 
-		switch (rightFacing)
-		{
-		case false:
-			currentAnimState = -5;
-			break;
-		case true:
-			currentAnimState = 5;
-			break;
-		}
+		// If we're already in the animation, don't reenter it
+		if (this.currentAnimState != aniState) {
 
+			// Set the currentAnimState to our new state
+			this.currentAnimState = aniState;
 
-	}
-	
-	public void setAnimMove () {
-		switch (rightFacing)
-		{
-		case false:
-			currentAnimState = -1;
-			Debug.Log("I should be facing left");
-			break;
-		case true:
-			currentAnimState = 1;
-			Debug.Log("I should be facing right");
-			break;
+			// Sets the animation state
+			animator.SetInteger ("AnimState", this.currentAnimState);
 		}
 	}
 
-	public void setAnimJump () {
-		//if (!(this.IsOnGround ())) {
-			switch (rightFacing)
-			{
-				case false:
-					currentAnimState = -2;
-					break;
-				case true:
-					currentAnimState = 2;
-					break;
-			}
-		//}
+	/**
+	 * Sets the player's animation state to the moving animation.
+	 * Handles finding the directional version of the animation.
+	 * Assumes the player object is already grounded.
+	 */
+	public void setAnimMove ()
+	{
+		// Figure out the correct version for checks and sets
+		int aniState = (rightFacing ? 1 : -1);
+
+		// If we're already in the animation, don't reenter it
+		if (this.currentAnimState != aniState) {
+
+			// Set the currentAnimState to our new state
+			this.currentAnimState = aniState;
+
+			// Sets the animation state
+			animator.SetInteger ("AnimState", this.currentAnimState);
+		}
 	}
 
-	public void setAnimFall () {
-		//if (!(this.IsOnGround ())) {
-			switch (rightFacing)
-			{
-				case false:
-					currentAnimState = -3;
-					break;
-				case true:
-					currentAnimState = 3;
-					break;
-			}
-		//}
+	/**
+	 * Sets the player's animation state to the jumping animation.
+	 * Handles finding the directional version of the animation.
+	 * Assumes the player object is already ungrounded.
+	 */
+	public void setAnimJump ()
+	{
+		// Figure out the correct version for checks and sets
+		int aniState = (rightFacing ? 2 : -2);
+
+		// If we're already in the animation, don't reenter it
+		if (this.currentAnimState != aniState) {
+
+			// Set the currentAnimState to our new state
+			this.currentAnimState = aniState;
+
+			// Sets the animation state
+			animator.SetInteger ("AnimState", this.currentAnimState);
+		}
 	}
 
+	/**
+	 * Sets the player's animation state to the falling animation.
+	 * Handles finding the directional version of the animation.
+	 * Assumes the player object is already ungrounded.
+	 */
+	public void setAnimFall ()
+	{
+		// Figure out the correct version for checks and sets
+		int aniState = (rightFacing ? 3 : -3);
+
+		// If we're already in the animation, don't reenter it
+		if (this.currentAnimState != aniState) {
+
+			// Set the currentAnimState to our new state
+			this.currentAnimState = aniState;
+
+			// Sets the animation state
+			animator.SetInteger ("AnimState", this.currentAnimState);
+		}
+	}
 }
