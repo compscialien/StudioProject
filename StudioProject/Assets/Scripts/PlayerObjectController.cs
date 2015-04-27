@@ -239,7 +239,6 @@ public class PlayerObjectController : MonoBehaviour
 		Debug.Log ("The player has died!");
 
 		this.rbody.velocity = Vector2.zero;
-		this.rbody.gravityScale = 0;
 		this.isDead = true;
 	}
 
@@ -326,7 +325,7 @@ public class PlayerObjectController : MonoBehaviour
 	 * -1, 1 = moving left, right
 	 * -2, 2 = jump up left, right
 	 * -3, 3 = jump down left, right
-	 * 4     = death
+	 *  4    = death
 	 */
 
 	/**
@@ -339,7 +338,7 @@ public class PlayerObjectController : MonoBehaviour
 		int aniState = (rightFacing ? 5 : -5);
 
 		// If we're already in the animation, don't reenter it
-		if (this.currentAnimState != aniState) {
+		if (this.currentAnimState != aniState && !this.isDead) {
 
 			// Set the currentAnimState to our new state
 			this.currentAnimState = aniState;
@@ -360,7 +359,7 @@ public class PlayerObjectController : MonoBehaviour
 		int aniState = (rightFacing ? 1 : -1);
 
 		// If we're already in the animation, don't reenter it
-		if (this.currentAnimState != aniState) {
+		if (this.currentAnimState != aniState && !this.isDead) {
 
 			// Set the currentAnimState to our new state
 			this.currentAnimState = aniState;
@@ -381,7 +380,7 @@ public class PlayerObjectController : MonoBehaviour
 		int aniState = (rightFacing ? 2 : -2);
 
 		// If we're already in the animation, don't reenter it
-		if (this.currentAnimState != aniState) {
+		if (this.currentAnimState != aniState && !this.isDead) {
 
 			// Set the currentAnimState to our new state
 			this.currentAnimState = aniState;
@@ -400,6 +399,25 @@ public class PlayerObjectController : MonoBehaviour
 	{
 		// Figure out the correct version for checks and sets
 		int aniState = (rightFacing ? 3 : -3);
+
+		// If we're already in the animation, don't reenter it
+		if (this.currentAnimState != aniState && !this.isDead) {
+
+			// Set the currentAnimState to our new state
+			this.currentAnimState = aniState;
+
+			// Sets the animation state
+			animator.SetInteger ("AnimState", this.currentAnimState);
+		}
+	}
+
+	/**
+	 * Sets the player's animation state to the dead animation.
+	 */
+	public void setAnimDead ()
+	{
+		// Figure out the correct version for checks and sets
+		int aniState = 4;
 
 		// If we're already in the animation, don't reenter it
 		if (this.currentAnimState != aniState) {
