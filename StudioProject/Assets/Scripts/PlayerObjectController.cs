@@ -3,16 +3,6 @@ using System.Collections;
 
 public class PlayerObjectController : MonoBehaviour
 {
-
-	/**
-	 * This is the acceleration that walking has.  Higher value means higher
-	 * acceleration.
-	 * 
-	 * Default should be 100, which provides enough thrust to real max speed
-	 * right away.
-	 */
-	public float walkThrust;
-
 	/**
 	 * Sets the walking speed of the player object.  Editable in the Unity
 	 * editor directly.  Should not be changed in code.
@@ -34,6 +24,16 @@ public class PlayerObjectController : MonoBehaviour
 	 * Reference to the empty object below the player for collision
 	 */
 	public Transform below;
+
+	/**
+	 * Reference to the empty object to the right of the player for collision
+	 */
+	public Transform right;
+
+	/**
+	 * Reference to the empty object to the left of the player for collision
+	 */
+	public Transform left;
 
 	/**
 	 * The y value of the player from the previous frame. Used to compare with
@@ -79,23 +79,32 @@ public class PlayerObjectController : MonoBehaviour
 	}
 
 	/**
+	 * This update function is called as fast as possible.  Used for animation and non-gameplay updates
+	 * so that they can be updated as soon as possible.
+	 */
+	void Update ()
+	{
+		// If the player is not on the groumd, check the jump arc and update the animation
+		// accordingly
+		if (isOnGround () == false) {
+			
+			this.checkFalling (this.rbody.position.y);
+		}
+		
+		// Otherwise, if the player is not moving, go to the idle animation
+		else if (!isMoving ()) { 
+			
+			this.setAnimIdle ();
+		}
+	}
+
+	/**
 	 * This is the per-frame update function.  Note that it used the timelocked FixedUpdate
 	 * version, instead of Update().  This prevents issues with rigid bodies and the physics.
 	 */
 	void FixedUpdate ()
 	{
-		// If the player is not on the groumd, check the jump arc and update the animation
-		// accordingly
-		if (isOnGround () == false) {
 
-			this.checkFalling (this.rbody.position.y);
-		}
-
-		// Otherwise, if the player is not moving, go to the idle animation
-		else if (!isMoving ()) { 
-
-			this.setAnimIdle ();
-		}
 	}
 
 	/**
@@ -122,27 +131,15 @@ public class PlayerObjectController : MonoBehaviour
 	}
 
 	/**
-	 * This update function runs after all other update functions.  It is used to cap the max speed
-	 * of the PlayerObject.
+	 * This update function runs after all other update functions.
 	 */
 	void LateUpdate ()
 	{
+		// If we are moving left and can't or are moving right and can't, set velocity to 0.
+		if ((this.cantMoveLeft () && this.rbody.velocity.x < 0)
+			|| (this.cantMoveRight () && this.rbody.velocity.x > 0)) {
 
-		// Get the velocity vector
-		Vector2 velocity = this.rbody.velocity;
-
-		// Find the maximum velocity in the x direction
-		// Vector math accounts for direction as well
-		Vector2 maxVelocity = new Vector2 (velocity.x, 0).normalized * walkSpeed;
-
-		// The y value must be copied separately so it is not factored into the normalization
-		// of the vector.
-		maxVelocity.y = velocity.y;
-
-		// Cap the maximum velocity
-		if ((velocity.x > 0 && velocity.x > maxVelocity.x) || (velocity.x < 0 && velocity.x < maxVelocity.x)) {
-
-			this.rbody.velocity = maxVelocity;
+			this.rbody.velocity = new Vector2 (0, this.rbody.velocity.y);
 		}
 	}
 
@@ -158,8 +155,15 @@ public class PlayerObjectController : MonoBehaviour
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
 		}
 
+		// If we can't move right due to an obstruction, leave the function
+		if (this.cantMoveRight ()) {
+			Debug.LogWarning ("Can't move right.");
+			return;
+		}
+
 		// Apply the walking thrust as a force to the rigid body
-		this.rbody.AddForce (walkThrust * Vector2.right);
+		//this.rbody.AddForce (walkThrust * Vector2.right);
+		this.rbody.velocity = new Vector2 (this.walkSpeed, this.rbody.velocity.y);
 
 		// Turn on the rightFacing flag so that animations face right
 		rightFacing = true;
@@ -180,8 +184,15 @@ public class PlayerObjectController : MonoBehaviour
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
 		}
 
+		// If we can't move left due to an obstruction, leave the function
+		if (this.cantMoveLeft ()) {
+			Debug.LogWarning ("Can't move left.");
+			return;
+		}
+
 		// Apply the walking thrust as a force to the rigid body
-		this.rbody.AddForce (-walkThrust * Vector2.right);
+		//this.rbody.AddForce (-walkThrust * Vector2.right);
+		this.rbody.velocity = new Vector2 (-this.walkSpeed, this.rbody.velocity.y);
 
 		// Flip the rightFacing flag so that animations face left
 		rightFacing = false;
@@ -197,6 +208,24 @@ public class PlayerObjectController : MonoBehaviour
 	bool isOnGround ()
 	{
 		return Physics2D.Raycast (new Vector2 (below.position.x, below.position.y), -Vector2.up, 0.001f);
+	}
+
+	/**
+	 * Returns true if there is nothing directly to the right of the player.
+	 */
+	bool cantMoveRight ()
+	{
+
+		return Physics2D.Raycast (new Vector2 (right.position.x, right.position.y), Vector2.right, 0.001f);
+	}
+
+	/**
+	 * Returns true if there is nothing directly to the left of the player.
+	 */
+	bool cantMoveLeft ()
+	{
+
+		return Physics2D.Raycast (new Vector2 (left.position.x, left.position.y), -Vector2.right, 0.001f);
 	}
 
 	/**
