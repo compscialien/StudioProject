@@ -69,6 +69,11 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	bool movingThisFrame = false;
 	bool movingLastFrame = false;
+
+	/**
+	 * Stores whether this player is dead
+	 */
+	bool isDead = false;
 	
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
@@ -113,7 +118,7 @@ public class PlayerObjectController : MonoBehaviour
 
 	/**
 	 * Called when the player object collides with another object.  Used to set animation state
-	 * when landing on the ground, as well as for hitting death triggers
+	 * when landing on the ground
 	 */
 	void OnCollisionEnter2D (Collision2D col)
 	{
@@ -131,6 +136,18 @@ public class PlayerObjectController : MonoBehaviour
 
 				this.setAnimIdle ();
 			}
+		}
+	}
+
+	/**
+	 * Called when the player enters a trigger - the death trigger zones
+	 */
+	void OnTriggerEnter2D (Collider2D other)
+	{
+		// The player entered a Death flag
+		if (other.tag == "Death") {
+
+			this.signalDeath ();
 		}
 	}
 
@@ -161,9 +178,9 @@ public class PlayerObjectController : MonoBehaviour
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
 		}
 
-		// If we can't move right due to an obstruction, leave the function
-		if (this.cantMoveRight ()) {
-			Debug.LogWarning ("Can't move right.");
+		// If we can't move right due to an obstruction, or if the player is dead, leave the function
+		if (this.cantMoveRight () || this.isDead) {
+
 			return;
 		}
 
@@ -194,9 +211,9 @@ public class PlayerObjectController : MonoBehaviour
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
 		}
 
-		// If we can't move left due to an obstruction, leave the function
-		if (this.cantMoveLeft ()) {
-			Debug.LogWarning ("Can't move left.");
+		// If we can't move left due to an obstruction, or if the player is dead, leave the function
+		if (this.cantMoveLeft () || this.isDead) {
+
 			return;
 		}
 
@@ -214,6 +231,16 @@ public class PlayerObjectController : MonoBehaviour
 
 			this.setAnimMove ();
 		}
+	}
+
+	void signalDeath ()
+	{
+
+		Debug.Log ("The player has died!");
+
+		this.rbody.velocity = Vector2.zero;
+		this.rbody.gravityScale = 0;
+		this.isDead = true;
 	}
 
 	/**
