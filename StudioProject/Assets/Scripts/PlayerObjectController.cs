@@ -21,6 +21,14 @@ public class PlayerObjectController : MonoBehaviour
 	public float jumpThrust;
 
 	/**
+	 * A vector that controls drag in a vector that is convoluted with velocity.
+	 * Each component is a linear scale of the amount of speed to mantain on each
+	 * update.
+	 * This is in scale with the linear drag of the rigidbody.
+	 */
+	public Vector2 convolutionDrag;
+
+	/**
 	 * Reference to the empty object below the player for collision
 	 */
 	public Transform below;
@@ -74,7 +82,7 @@ public class PlayerObjectController : MonoBehaviour
 	 * Stores whether this player is dead
 	 */
 	bool isDead = false;
-	
+
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
 	 * acquire any references required and run any set up code we may need.
@@ -110,10 +118,11 @@ public class PlayerObjectController : MonoBehaviour
 	}
 
 	/**
-	 * This is the per-frame update function.
+	 * This is the per-frame update function.  Used to apply the convolution drag.
 	 */
 	void FixedUpdate ()
 	{
+		this.rbody.velocity = Vector2.Scale (this.rbody.velocity, this.convolutionDrag);
 	}
 
 	/**
@@ -164,6 +173,7 @@ public class PlayerObjectController : MonoBehaviour
 			this.rbody.velocity = new Vector2 (0, this.rbody.velocity.y);
 		}
 
+		// Copy current moving state to last state position
 		this.movingLastFrame = this.movingThisFrame;
 	}
 
@@ -315,7 +325,7 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	public bool isMoving ()
 	{
-		return (Mathf.Abs (this.rbody.velocity.x) >= 0.00001);
+		return (Mathf.Abs (this.rbody.velocity.x) >= 0.001);
 	}
 
 	/**
