@@ -63,6 +63,12 @@ public class PlayerObjectController : MonoBehaviour
 	 * A private reference to the animation controller that this PlayerObject uses.
 	 */
 	Animator animator;
+
+	/**
+	 * Stores whether the object was moving in this/the last frame.
+	 */
+	bool movingThisFrame = false;
+	bool movingLastFrame = false;
 	
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
@@ -86,7 +92,7 @@ public class PlayerObjectController : MonoBehaviour
 	{
 		// If the player is not on the groumd, check the jump arc and update the animation
 		// accordingly
-		if (isOnGround () == false) {
+		if (!this.isOnGround ()) {
 			
 			this.checkFalling (this.rbody.position.y);
 		}
@@ -99,12 +105,10 @@ public class PlayerObjectController : MonoBehaviour
 	}
 
 	/**
-	 * This is the per-frame update function.  Note that it used the timelocked FixedUpdate
-	 * version, instead of Update().  This prevents issues with rigid bodies and the physics.
+	 * This is the per-frame update function.
 	 */
 	void FixedUpdate ()
 	{
-
 	}
 
 	/**
@@ -136,11 +140,14 @@ public class PlayerObjectController : MonoBehaviour
 	void LateUpdate ()
 	{
 		// If we are moving left and can't or are moving right and can't, set velocity to 0.
-		if ((this.cantMoveLeft () && this.rbody.velocity.x < 0)
-			|| (this.cantMoveRight () && this.rbody.velocity.x > 0)) {
+		if (((this.cantMoveLeft () && this.rbody.velocity.x < 0)
+			|| (this.cantMoveRight () && this.rbody.velocity.x > 0))
+			|| (!this.movingLastFrame && !this.movingThisFrame)) {
 
 			this.rbody.velocity = new Vector2 (0, this.rbody.velocity.y);
 		}
+
+		this.movingLastFrame = this.movingThisFrame;
 	}
 
 	/**
@@ -149,7 +156,6 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	public void signalRight ()
 	{
-
 		// Check that the rigidbody component was acquired in Start(), or throw an exception.
 		if (this.rbody == null) {
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
@@ -166,10 +172,15 @@ public class PlayerObjectController : MonoBehaviour
 		this.rbody.velocity = new Vector2 (this.walkSpeed, this.rbody.velocity.y);
 
 		// Turn on the rightFacing flag so that animations face right
-		rightFacing = true;
+		this.rightFacing = true;
 
-		// Turns on the "move" animation state
-		setAnimMove ();
+		this.movingThisFrame = true;
+
+		// Turns on the "move" animation state if the player is grounded
+		if (this.isOnGround ()) {
+
+			this.setAnimMove ();
+		}
 	}
 
 	/**
@@ -178,7 +189,6 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	public void signalLeft ()
 	{
-		
 		// Check that the rigidbody component was acquired in Start(), or throw an exception.
 		if (this.rbody == null) {
 			throw new System.NullReferenceException ("Rigidbody2D component not acquired at Start()");
@@ -195,11 +205,15 @@ public class PlayerObjectController : MonoBehaviour
 		this.rbody.velocity = new Vector2 (-this.walkSpeed, this.rbody.velocity.y);
 
 		// Flip the rightFacing flag so that animations face left
-		rightFacing = false;
+		this.rightFacing = false;
 
-		// Turns on the "move" animation state
-		setAnimMove ();
+		this.movingThisFrame = true;
 
+		// Turns on the "move" animation state if the player is grounded
+		if (this.isOnGround ()) {
+
+			this.setAnimMove ();
+		}
 	}
 
 	/**
