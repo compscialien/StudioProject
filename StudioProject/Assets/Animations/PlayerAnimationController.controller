@@ -50,7 +50,7 @@ AnimatorStateTransition:
   m_HasExitTime: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
+  m_CanTransitionToSelf: 0
 --- !u!1101 &110114476
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -73,7 +73,7 @@ AnimatorStateTransition:
   m_HasExitTime: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
+  m_CanTransitionToSelf: 0
 --- !u!1101 &110116980
 AnimatorStateTransition:
   m_ObjectHideFlags: 3
@@ -320,7 +320,7 @@ AnimatorStateTransition:
   m_HasExitTime: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
+  m_CanTransitionToSelf: 0
 --- !u!1101 &110156326
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -343,7 +343,7 @@ AnimatorStateTransition:
   m_HasExitTime: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
+  m_CanTransitionToSelf: 0
 --- !u!1101 &110163638
 AnimatorStateTransition:
   m_ObjectHideFlags: 3
@@ -412,7 +412,7 @@ AnimatorStateTransition:
   m_HasExitTime: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
+  m_CanTransitionToSelf: 0
 --- !u!1101 &110172268
 AnimatorStateTransition:
   m_ObjectHideFlags: 3
