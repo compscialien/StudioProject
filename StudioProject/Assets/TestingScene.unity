@@ -1274,9 +1274,10 @@ GameObject:
   - 4: {fileID: 1775727567}
   - 212: {fileID: 1775727566}
   - 95: {fileID: 1775727565}
+  - 61: {fileID: 1775727568}
   m_Layer: 0
   m_Name: enemy-sharkbot_0
-  m_TagString: Untagged
+  m_TagString: Death
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1336,6 +1337,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 17
+--- !u!61 &1775727568
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1775727564}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: .159999996, y: .159999996}
+  serializedVersion: 2
+  m_Size: {x: .319999993, y: .319999993}
 --- !u!1 &1802413335
 GameObject:
   m_ObjectHideFlags: 0
