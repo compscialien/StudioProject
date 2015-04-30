@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 2df693a5cdc904a03af90fe1c291355e
-timeCreated: 1430353179
+timeCreated: 1430353572
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -61,7 +61,7 @@ TextureImporter:
         width: 32
         height: 32
       alignment: 9
-      pivot: {x: .720000029, y: 0}
+      pivot: {x: .5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: enemy-sharkbot_1
       rect:
@@ -71,7 +71,7 @@ TextureImporter:
         width: 31
         height: 32
       alignment: 9
-      pivot: {x: .75, y: 0}
+      pivot: {x: .5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 
