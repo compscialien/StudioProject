@@ -11,6 +11,8 @@ public class CameraMovement : MonoBehaviour {
 	// values in GUI
 	public float cameraSpeed = 1;
 
+	// How far the camera should travel
+	public float travelDistance = 42;
 
 	// Use this for initialization
 	void Start () {
@@ -19,7 +21,7 @@ public class CameraMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Time.time > startTime) {
+		if (Time.time > startTime && this.transform.position.x <= travelDistance) {
 			transform.Translate (Vector2.right * cameraSpeed * Time.deltaTime);
 		}
 	}
