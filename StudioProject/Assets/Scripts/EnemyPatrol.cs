@@ -34,14 +34,14 @@ public class EnemyPatrol : MonoBehaviour {
 	/**
 	 * A private reference to the animation controller that this enemy object uses.
 	 */
-	Animator animator;
+	//Animator animator;
 
 
 	// Use this for initialization
 	void Start () {
 		
 		// Sets the variable animator to the animation controller assigned to this enemy object
-		animator = this.GetComponent<Animator> ();
+		//animator = this.GetComponent<Animator> ();
 
 		if (movingRight) {
 			minimumX = this.transform.position.x;
@@ -66,10 +66,16 @@ public class EnemyPatrol : MonoBehaviour {
 		
 		if(transform.position.x >= maximumX) {
 			Flip ();
+			// Without this next line, it is possible for the object to get stuck
+			// just barely beyond maximumX, resulting in a vibrating effect
+			transform.position = new Vector2 (maximumX, this.transform.position.y);
 		}
 		
 		if(transform.position.x <= minimumX) {
 			Flip ();
+			// Without this next line, it is possible for the object to get stuck
+			// just barely beyond minimumX, resulting in a vibrating effect
+			transform.position = new Vector2 (minimumX, this.transform.position.y);
 		}
 		
 		
@@ -77,7 +83,7 @@ public class EnemyPatrol : MonoBehaviour {
 
 	void Flip()
 	{
-		// Switch the way the player is labelled as facing
+		// Switch the way the player is labeled as facing
 		movingRight = !movingRight;
 		
 		// Multiply the player's x local scale by -1
