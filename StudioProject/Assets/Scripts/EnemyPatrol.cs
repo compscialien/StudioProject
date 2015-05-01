@@ -23,6 +23,9 @@ public class EnemyPatrol : MonoBehaviour {
 	 */
 	public bool movingRight = true;
 
+	// Whether or not the enemy object is rotated 180 degrees in Z
+	bool upsideDown = false;
+
 	/* The minimum X position of this enemy object; set in the Start() method
 	 */
 	float minimumX;
@@ -51,6 +54,16 @@ public class EnemyPatrol : MonoBehaviour {
 			maximumX = this.transform.position.x;
 		}
 
+		Debug.Log("Z rotation = " + this.transform.eulerAngles.z);
+
+		if (this.transform.eulerAngles.z >= 90) {
+
+			upsideDown = true;
+			Vector3 theScale = transform.localScale;
+			theScale.x *= -1;
+			transform.localScale = theScale;
+
+		}
 
 
 
