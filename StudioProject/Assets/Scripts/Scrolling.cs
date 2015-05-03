@@ -5,15 +5,22 @@ public class Scrolling : MonoBehaviour {
 
 	public float speed = 0.05f;
 
+	public float delay;
+
+	float startTime;
+
 	// Use this for initialization
 	void Start () {
 	
+		startTime = Time.time + delay;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
-		Vector2 offset = new Vector2 (Time.time * speed, 0);
-		GetComponent<Renderer>().material.mainTextureOffset = offset;
+		if (Time.time > startTime) {
+			Vector2 offset = new Vector2 ((Time.time - delay) * speed, 0);
+			GetComponent<Renderer> ().material.mainTextureOffset = offset;
+		}
 	}
 }
