@@ -19,7 +19,7 @@ public class Scrolling : MonoBehaviour {
 	void Update () {
 	
 		if (Time.time > startTime) {
-			Vector2 offset = new Vector2 ((Time.time - delay) * speed, 0);
+			Vector2 offset = new Vector2 ((Time.time - startTime) * speed, 0);
 			GetComponent<Renderer> ().material.mainTextureOffset = offset;
 		}
 	}
