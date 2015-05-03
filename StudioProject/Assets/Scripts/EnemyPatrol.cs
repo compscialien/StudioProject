@@ -56,7 +56,7 @@ public class EnemyPatrol : MonoBehaviour {
 
 		Debug.Log("Z rotation = " + this.transform.eulerAngles.z);
 
-		if (this.transform.eulerAngles.z >= 90) {
+		if (this.transform.localScale.y < 0) {
 
 			upsideDown = true;
 			Vector3 theScale = transform.localScale;
