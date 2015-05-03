@@ -77,18 +77,13 @@ public class EnemyPatrol : MonoBehaviour {
 		else
 			transform.Translate (-Vector2.right * walkSpeed * Time.deltaTime);
 		
-		if(transform.position.x >= maximumX) {
+		if(transform.position.x >= maximumX && movingRight) {
 			Flip ();
-			// Without this next line, it is possible for the object to get stuck
-			// just barely beyond maximumX, resulting in a vibrating effect
-			transform.position = new Vector2 (maximumX, this.transform.position.y);
 		}
 		
-		if(transform.position.x <= minimumX) {
+		if(transform.position.x <= minimumX && !movingRight) {
 			Flip ();
-			// Without this next line, it is possible for the object to get stuck
-			// just barely beyond minimumX, resulting in a vibrating effect
-			transform.position = new Vector2 (minimumX, this.transform.position.y);
+
 		}
 		
 		
