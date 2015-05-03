@@ -5,6 +5,9 @@ using System.IO;
 public class ReplayController : MonoBehaviour
 {
 
+	/**
+	 * The array list of replays that this controller will run
+	 */
 	ArrayList replays;
 
 	/**
