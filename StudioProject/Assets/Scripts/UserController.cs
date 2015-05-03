@@ -51,7 +51,7 @@ public class UserController : MonoBehaviour
 
 			if (restartTime < 0.0f) {
 
-				restartTime = Time.time + 2.75f;
+				restartTime = Time.time + 3.75f;
 			}
 			else if (Time.time >= restartTime) {
 

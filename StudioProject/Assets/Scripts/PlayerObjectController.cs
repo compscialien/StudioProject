@@ -1,8 +1,13 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(AudioSource))]
+
 public class PlayerObjectController : MonoBehaviour
 {
+	// Bring in the screaming audio
+	public AudioClip clip;
+
 	/**
 	 * Sets the walking speed of the player object.  Editable in the Unity
 	 * editor directly.  Should not be changed in code.
@@ -155,7 +160,7 @@ public class PlayerObjectController : MonoBehaviour
 	void OnTriggerEnter2D (Collider2D other)
 	{
 		// The player entered a Death flag
-		if (other.tag == "Death") {
+		if (other.tag == "Death" && !this.isDead) {
 
 			this.signalDeath ();
 		}
@@ -246,7 +251,7 @@ public class PlayerObjectController : MonoBehaviour
 
 	void signalDeath ()
 	{
-
+		AudioSource.PlayClipAtPoint(clip, transform.position);
 		this.rbody.velocity = Vector2.zero;
 		this.isDead = true;
 		this.setAnimDead ();
