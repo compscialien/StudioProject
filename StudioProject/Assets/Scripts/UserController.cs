@@ -6,11 +6,15 @@ public class UserController : MonoBehaviour
 
 	public GameObject player;
 
+	float restartTime;
+
 	// Use this for initialization
 	void Start ()
 	{
 	
 		player = GameObject.Find ("PlayerObject");
+
+		restartTime = -500.0f;
 	}
 	
 	/**
@@ -41,5 +45,19 @@ public class UserController : MonoBehaviour
 			// Send a jump movement signal to the player object
 			player.GetComponent<PlayerObjectController> ().signalJump ();
 		}
-	}
+
+		// If the owned player is dead
+		if (player.GetComponent<PlayerObjectController> ().isDead) {
+
+			if (restartTime < 0.0f) {
+
+				restartTime = Time.time + 2.75f;
+			}
+			else if (Time.time >= restartTime) {
+
+				// Reload the start screen level
+				Application.LoadLevel ("StartScreen");
+			}
+		}
+	}	
 }

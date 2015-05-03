@@ -81,7 +81,8 @@ public class PlayerObjectController : MonoBehaviour
 	/**
 	 * Stores whether this player is dead
 	 */
-	bool isDead = false;
+	[HideInInspector]
+	public bool isDead = false;
 
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
@@ -246,8 +247,6 @@ public class PlayerObjectController : MonoBehaviour
 	void signalDeath ()
 	{
 
-		Debug.Log ("The player has died!");
-
 		this.rbody.velocity = Vector2.zero;
 		this.isDead = true;
 		this.setAnimDead ();
@@ -292,7 +291,7 @@ public class PlayerObjectController : MonoBehaviour
 		}
 
 		// Check if this object is on the ground
-		if (this.isOnGround ()) {
+		if (this.isOnGround () && !isDead) {
 
 			// Apply the jumping thrust as a force to the rigid body
 			this.rbody.AddForce (jumpThrust * Vector2.up);
