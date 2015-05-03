@@ -13,11 +13,6 @@ public class UserController : MonoBehaviour
 	public GameObject player;
 
 	/**
-	 * The random generator used in generating file names
-	 */
-	UnityEngine.Random random;
-
-	/**
 	 * The UTF8 encoder used when writing the signals to the file
 	 */
 	UTF8Encoding encoding;
@@ -35,9 +30,6 @@ public class UserController : MonoBehaviour
 	
 		// Find the player object in the scene
 		player = GameObject.Find ("PlayerObject");
-
-		// Initialize the random generator
-		random = new UnityEngine.Random ();
 
 		// Initialize the encoder
 		encoding = new UTF8Encoding (true);
@@ -57,7 +49,7 @@ public class UserController : MonoBehaviour
 		const int length = 10;
 		
 		// All of the characters allowed in the filename
-		const char[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy0123456789";
+		const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy0123456789";
 		
 		// The ending of the file name
 		const string extension = ".txt";
@@ -73,7 +65,7 @@ public class UserController : MonoBehaviour
 
 				// Select a char from characters from [0, characters.Length) using the floored int value to eliminate
 				// the potential decimal values from random.Range
-				selected [i] = characters [Mathf.FloorToInt (random.Range (0, characters.Length))];
+				selected [i] = characters [Mathf.FloorToInt (UnityEngine.Random.Range (0, characters.Length))];
 			}
 
 			// Convert from char array to string and add the extension
@@ -135,6 +127,6 @@ public class UserController : MonoBehaviour
 		Byte[] signalBytes = encoding.GetBytes (signals);
 
 		// Write the signals string to a file
-		stream.Write (signalBytes);
+		stream.Write (signalBytes, 0, signalBytes.Length);
 	}
 }
