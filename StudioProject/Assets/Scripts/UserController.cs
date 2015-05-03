@@ -15,7 +15,7 @@ public class UserController : MonoBehaviour
 	/**
 	 * The random generator used in generating file names
 	 */
-	Random random;
+	UnityEngine.Random random;
 
 	/**
 	 * The UTF8 encoder used when writing the signals to the file
@@ -37,7 +37,7 @@ public class UserController : MonoBehaviour
 		player = GameObject.Find ("PlayerObject");
 
 		// Initialize the random generator
-		random = new Random ();
+		random = new UnityEngine.Random ();
 
 		// Initialize the encoder
 		encoding = new UTF8Encoding (true);
