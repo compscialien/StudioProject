@@ -26,7 +26,7 @@ public class ReplayController : MonoBehaviour
 		// Initialize the array list with the size of the files array
 		// By initializing it with the proper size, we will suffer no slowdowns
 		// to the expansion of this list.
-		readers = new ArrayList (files.Length);
+		replays = new ArrayList (files.Length);
 
 		// For each file in the array:
 		foreach (var file in files) {
@@ -40,7 +40,7 @@ public class ReplayController : MonoBehaviour
 			replay.controller = null;
 
 			// Add the reader to the list of readers
-			replays.Add (r);
+			replays.Add (replay);
 		}
 	}
 	
