@@ -128,5 +128,7 @@ public class UserController : MonoBehaviour
 
 		// Write the signals string to a file
 		stream.Write (signalBytes, 0, signalBytes.Length);
+
+		// TODO close stream after bot is dead after the merge to avoid duplication of code
 	}
 }
