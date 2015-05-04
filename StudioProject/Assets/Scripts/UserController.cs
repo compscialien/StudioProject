@@ -22,6 +22,8 @@ public class UserController : MonoBehaviour
 	 */
 	FileStream stream;
 
+	float restartTime;
+
 	/**
 	 * Initializes values used by the UserController
 	 */
@@ -36,6 +38,8 @@ public class UserController : MonoBehaviour
 
 		// Create a stream to the file with a randomly generated name
 		stream = new FileInfo ("./Replays/" + MakeRandomFileName ()).Create ();
+		
+		restartTime = -500.0f;
 	}
 
 	/**
@@ -119,16 +123,34 @@ public class UserController : MonoBehaviour
 			// Adds a "j" to the signals string
 			signals = signals + "j";
 		}
+		
+		// If the owned player is dead
+		if (player.GetComponent<PlayerObjectController> ().isDead) {
 
-		// Use the correct version of the new line for the environment ("\n" or "\r\n")
-		signals = signals + Environment.NewLine;
+			if (restartTime < 0.0f) {
 
-		// Convert the signals string into bytes encoded in UTF8
-		Byte[] signalBytes = encoding.GetBytes (signals);
+				restartTime = Time.time + 3.75f;
+			}
+			else if (Time.time >= restartTime) {
+			
+				stream.Close();
 
-		// Write the signals string to a file
-		stream.Write (signalBytes, 0, signalBytes.Length);
+				// Reload the start screen level
+				Application.LoadLevel ("StartScreen");
+			}
+		}
 
-		// TODO close stream after bot is dead after the merge to avoid duplication of code
+		// Otherwise, we should write the outcome of this frame
+		else {
+		
+			// Use the correct version of the new line for the environment ("\n" or "\r\n")
+			signals = signals + Environment.NewLine;
+
+			// Convert the signals string into bytes encoded in UTF8
+			Byte[] signalBytes = encoding.GetBytes (signals);
+
+			// Write the signals string to a file
+			stream.Write (signalBytes, 0, signalBytes.Length);
+		}
 	}
 }
