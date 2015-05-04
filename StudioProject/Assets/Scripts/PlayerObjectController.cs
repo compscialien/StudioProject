@@ -285,7 +285,7 @@ public class PlayerObjectController : MonoBehaviour
 	 */
 	bool isOnGround ()
 	{
-		return Physics2D.Raycast (new Vector2 (below.position.x, below.position.y), -Vector2.up, 0.001f);
+		return Physics2D.Raycast (new Vector2 (below.position.x, below.position.y), -Vector2.up, 0.001f, 1 << LayerMask.NameToLayer ("Ground"));
 	}
 
 	/**
