@@ -1300,6 +1300,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1894010733}
+  - 114: {fileID: 1894010734}
   m_Layer: 0
   m_Name: ReplayController
   m_TagString: Untagged
@@ -1319,6 +1320,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 16
+--- !u!114 &1894010734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1894010732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955d7f046fd79f04cb33f7358f47ecad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1996304585
 GameObject:
   m_ObjectHideFlags: 0
