@@ -87,7 +87,16 @@ public class PlayerObjectController : MonoBehaviour
 	 * Stores whether this player is dead
 	 */
 	[HideInInspector]
-	public bool isDead = false;
+	public bool
+		isDead = false;
+
+	/**
+	 * Flag of whether this instance is a replay or not, set by the controller that
+	 * owns the object
+	 */
+	[HideInInspector]
+	public bool
+		isReplay;
 
 	/**
 	 * Handles initialization.  Called when the PlayerObject is spawned.  Used to
@@ -249,11 +258,25 @@ public class PlayerObjectController : MonoBehaviour
 		}
 	}
 
+	/**
+	 * Signals that this object has died
+	 */
 	void signalDeath ()
 	{
-		AudioSource.PlayClipAtPoint(clip, transform.position);
+		// Play the death audio only if this is not in replay mode
+		if (!isReplay) {
+
+			// Plays the audio at the player position
+			AudioSource.PlayClipAtPoint (clip, transform.position);
+		}
+
+		// Sets the velocity to zero to stop the player
 		this.rbody.velocity = Vector2.zero;
+
+		// Sets the isDead flag to stop certain functions from triggering
 		this.isDead = true;
+
+		// Sets the animation state to the dead state
 		this.setAnimDead ();
 	}
 
