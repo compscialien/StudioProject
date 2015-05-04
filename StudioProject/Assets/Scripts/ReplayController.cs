@@ -61,6 +61,9 @@ public class ReplayController : MonoBehaviour
 				replay.controller = clone.GetComponent<PlayerObjectController> ();
 			}
 
+			// Set the replay controller to be true
+			replay.controller.isReplay = true;
+
 			// Add the reader to the list of readers
 			replays.Add (replay);
 		}
@@ -69,14 +72,20 @@ public class ReplayController : MonoBehaviour
 	// FixedUpdate is called once per frame
 	void FixedUpdate ()
 	{
+		// Living object flag set to true when an object is alive
+		bool atLeastOneAlive = false;
+
 		// Process each replay object for this frame
 		foreach (ReplayPlayer replay in replays) {
 
 			// Get the next line in the file
 			string line = replay.reader.ReadLine ();
 
-			// If the line is not empty and there is a controller
-			if (line != null && replay.controller != null) {
+			// If the line is not empty and there is a controller and it is alive
+			if (line != null && replay.controller != null && !replay.controller.isDead) {
+
+				// Set the flag that at least one object is alive
+				atLeastOneAlive = true;
 
 				// If the line contains an "l"
 				if (line.Contains ("l")) {
@@ -99,6 +108,13 @@ public class ReplayController : MonoBehaviour
 					replay.controller.signalJump ();
 				}
 			}
+		}
+
+		// If there are no more objects still alive
+		if (!atLeastOneAlive) {
+
+			// We want to reload the level if there's none alive
+			Application.LoadLevel ("Level01Replay");
 		}
 	}
 
