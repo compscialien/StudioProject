@@ -38,8 +38,12 @@ public class UserController : MonoBehaviour
 
 		// Create a stream to the file with a randomly generated name
 		stream = new FileInfo ("./Replays/" + MakeRandomFileName ()).Create ();
-		
+
+		// Sets the restart time to a large negative value
 		restartTime = -500.0f;
+
+		// Set the replay flag to false
+		player.GetComponent<PlayerObjectController> ().isReplay = false;
 	}
 
 	/**
@@ -130,10 +134,9 @@ public class UserController : MonoBehaviour
 			if (restartTime < 0.0f) {
 
 				restartTime = Time.time + 3.75f;
-			}
-			else if (Time.time >= restartTime) {
+			} else if (Time.time >= restartTime) {
 			
-				stream.Close();
+				stream.Close ();
 
 				// Reload the start screen level
 				Application.LoadLevel ("StartScreen");
